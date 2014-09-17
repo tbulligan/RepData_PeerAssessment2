@@ -1,0 +1,38 @@
+---
+title: "TBD"
+author: "Tomaso Bulligan"
+date: "Tuesday, September 16, 2014"
+output: html_document
+---
+
+```{r options,echo=FALSE}
+library(knitr)
+library(data.table)
+opts_chunk$set(dev='CairoPNG')
+setwd(setwd("./GitHub/RepData_PeerAssessment2/"))
+```
+
+REMEMBER TO REMOVE SETWD
+
+Instructions
+https://class.coursera.org/repdata-006/human_grading/view/courses/972592/assessments/4/submissions
+
+# !TITLE TBD!
+
+# Synopsis
+
+# Data Processing
+
+```{r}
+# Fetch original data set
+file.url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+file.local <- "StormData.csv.bz2"
+if(!file.exists(file.local)) {
+    download.file(file.url, file.local, "curl")
+}
+
+# Read data set
+```
+# Results
+
+# 
