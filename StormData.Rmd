@@ -9,15 +9,29 @@ output: html_document
 library(knitr)
 library(data.table)
 opts_chunk$set(dev='CairoPNG')
-setwd(setwd("./GitHub/RepData_PeerAssessment2/"))
+setwd("./GitHub/RepData_PeerAssessment2/")
 ```
+
+# Notes
 
 REMEMBER TO REMOVE SETWD
 
-Instructions
+## Instructions
 https://class.coursera.org/repdata-006/human_grading/view/courses/972592/assessments/4/submissions
 
-# !TITLE TBD!
+## Important *codebook like* resources
+https://ire.org/nicar/database-library/databases/storm-events/
+http://www.ncdc.noaa.gov/stormevents/
+
+## Questions
+
+1. Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
+
+2. Across the United States, which types of events have the greatest economic consequences?
+
+Consider writing your report as if it were to be read by a government or municipal manager who might be responsible for preparing for severe weather events and will need to prioritize resources for different types of events. However, **there is no need to make any specific recommendations in your report**.
+
+# !!! TITLE TBD !!!
 
 # Synopsis
 
@@ -31,8 +45,14 @@ if(!file.exists(file.local)) {
     download.file(file.url, file.local, "curl")
 }
 
-# Read data set
+# Read data set - WHY DATA.TABLE DOESN'T WORK?
+df <- read.csv("StormData.csv.bz2", stringsAsFactors = FALSE)
+
+# Clean data previous to 1996 (explain why)
+
+# Consider cleaning people/property/crop damage == 0
 ```
+
 # Results
 
 # 
