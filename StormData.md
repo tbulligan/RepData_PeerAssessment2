@@ -1,6 +1,11 @@
-# Tornadoes and floods most damaging events to people and the US economy
-Tomaso Bulligan  
-Sunday, September 21, 2014  
+---
+title: "Tornadoes and floods most damaging events to people and the US economy"
+author: "Tomaso Bulligan"
+date: "Sunday, September 21, 2014"
+output:
+  html_document:
+    keep_md: yes
+---
 
 
 
@@ -23,6 +28,13 @@ Due to a radical change in the way NOAA records data which started on January 19
 ```r
 # Load required libraries
 library(car)
+```
+
+```
+## Error: there is no package called 'car'
+```
+
+```r
 library(reshape2)
 library(ggplot2)
 
@@ -61,8 +73,21 @@ exp.list.prop = "'0'=1;'1'=10;'2'=100;'3'=1000;'4'=10000;'5'=100000;'6'=1000000;
 exp.list.crop = "'0'=1;'2'=100;'8'=100000000;'k'=1000;'K'=1000;'B'=1000000000;
                 'm'=1000000;'M'=1000000;'?'=0"
 df$propdmg <- df$propdmg * as.numeric(recode(df$propdmgexp, exp.list.prop))
-df$cropdmg <- df$cropdmg * as.numeric(recode(df$cropdmgexp, exp.list.crop))
+```
 
+```
+## Error: could not find function "recode"
+```
+
+```r
+df$cropdmg <- df$cropdmg * as.numeric(recode(df$cropdmgexp, exp.list.crop))
+```
+
+```
+## Error: could not find function "recode"
+```
+
+```r
 # Remove unused columns
 df <- df[ , -c(1, 6, 8)]
 
@@ -122,7 +147,7 @@ ggplot(personal.dmg, aes(x = evtype, y = value, fill = variable)) +
          x = "", y = "People affected (units)")
 ```
 
-![plot of chunk unnamed-chunk-5](./StormData_files/figure-html/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 ## Economic damage
 
@@ -135,17 +160,17 @@ economic.dmg
 ```
 
 ```
-##               evtype   propdmg   cropdmg     count
-## 17             flood 1.325e+11 4.793e+09 1.373e+11
-## 32 hurricane/typhoon 2.674e+10 2.608e+09 2.935e+10
-## 52           tornado 1.603e+10 2.778e+08 1.631e+10
-## 31         hurricane 9.716e+09 2.688e+09 1.240e+10
-## 24              hail 7.602e+09 1.729e+09 9.331e+09
-## 16       flash flood 7.094e+09 1.308e+09 8.402e+09
-## 49  storm surge/tide 4.641e+09 8.500e+05 4.641e+09
-## 51 thunderstorm wind 3.383e+09 3.983e+08 3.781e+09
-## 62          wildfire 3.498e+09 1.861e+08 3.684e+09
-## 30         high wind 2.425e+09 6.319e+08 3.057e+09
+##                evtype propdmg cropdmg   count
+## 124         tstm wind 1330737  109111 1439848
+## 38        flash flood 1247563  161067 1408629
+## 121           tornado 1187878   90129 1278007
+## 57               hail  575317  498339 1073656
+## 40              flood  824937  151826  976763
+## 119 thunderstorm wind  862257   66663  928920
+## 89          lightning  488562    1903  490465
+## 69          high wind  315098   17268  332366
+## 151      winter storm  126910    1964  128874
+## 62         heavy snow   89393    1592   90985
 ```
 
 Floods cause the highest economic damage of all event types.
@@ -161,7 +186,7 @@ ggplot(economic.dmg, aes(x = evtype, y = value, fill = variable)) +
          x = "", y = "Damage value (USD)")
 ```
 
-![plot of chunk unnamed-chunk-7](./StormData_files/figure-html/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 # External resources
 - <https://ire.org/nicar/database-library/databases/storm-events/>
