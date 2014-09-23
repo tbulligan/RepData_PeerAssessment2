@@ -16,7 +16,7 @@ This report analyses data from the NOAA Storm Database to answer the following q
 1. Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to personal health?
 2. Across the United States, which types of events have the greatest economic consequences?
 
-According to this analysis, the most dangeros events to people are tornadoes, while floods have the highest economic impact.
+According to this analysis, the most dangerous events to people are tornadoes, while floods have the highest economic impact.
 
 # Data Processing
 
@@ -24,21 +24,19 @@ Due to a radical change in the way NOAA records data which started on January 19
 
 *Note: There is spelling and naming variation across events in the EVTYPE variable. The top 10 causes of personal and economic damage, which are the focus of this analysis, are barely affected by this. Therefore the author kept the EVTYPE variable value untouched.*
 
+First we load the libraries we will be needing for the analysis.
+
 
 ```r
-# Load required libraries
 library(car)
-```
-
-```
-## Error: there is no package called 'car'
-```
-
-```r
 library(reshape2)
 library(ggplot2)
+```
 
-# Fetch original data set if not present locally
+We check whether the data set is already in the current working directory and, if not, we download it.
+
+
+```r
 file.url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 file.local <- "StormData.csv.bz2"
 if(!file.exists(file.local)) {
@@ -46,55 +44,64 @@ if(!file.exists(file.local)) {
 }
 ```
 
+We load the data set into the local environment. We also change all content to lowercase in order to make the content easier to work with from a coder's perspective.
+
 
 ```r
-# Read data set
 df <- read.csv(file.local, stringsAsFactors = FALSE)
-```
-
-
-```r
-# Change names and events to lowercase
 names(df) <- tolower(names(df))
 df$evtype <- tolower(df$evtype)
+```
 
-# Drop fields not relevant to this analysis
+We drop all fields that are not relevant to this analysis, leaving only data related to:
+
+- Date
+- Event type
+- Fatalities
+- Injuries
+- Damage to property
+- Damage to crops
+
+
+```r
 df <- df[, c("bgn_date", "evtype", "fatalities", "injuries", "propdmg",
              "propdmgexp", "cropdmg", "cropdmgexp")]
+```
 
-# Clean data previous to 1996
+We clean all data previous to 1996 due to the changes in the data collection methodology outlined above.
+
+
+```r
 df$bgn_date <- as.Date(df$bgn_date, format = "%m/%d/%Y %H:%M:%S")
 df <- df[df$bgn_date > as.Date("1995-12-31"), ]
+```
 
-# Convert economic damage to full number
+We change the values in the fields related to property and crop damage to a consistent format, then we drop the columns we will not be using for the remaining part of the analysis.
+
+
+```r
 exp.list.prop = "'0'=1;'1'=10;'2'=100;'3'=1000;'4'=10000;'5'=100000;'6'=1000000;
                 '7'=10000000;'8'=100000000;'B'=1000000000;'h'=100;'H'=100;
                 'K'=1000;'m'=1000000;'M'=1000000;'-'=0;'?'=0;'+'=0"
 exp.list.crop = "'0'=1;'2'=100;'8'=100000000;'k'=1000;'K'=1000;'B'=1000000000;
                 'm'=1000000;'M'=1000000;'?'=0"
 df$propdmg <- df$propdmg * as.numeric(recode(df$propdmgexp, exp.list.prop))
-```
-
-```
-## Error: could not find function "recode"
-```
-
-```r
 df$cropdmg <- df$cropdmg * as.numeric(recode(df$cropdmgexp, exp.list.crop))
+df <- df[ , -c(1, 6, 8)]
 ```
 
-```
-## Error: could not find function "recode"
-```
+All events with no consequences to personal safety or property damage are excluded.
+
 
 ```r
-# Remove unused columns
-df <- df[ , -c(1, 6, 8)]
-
-# Remove events with no personal or economic damage
 df <- subset(df, df$fatalities + df$injuries != 0 |
                  df$propdmg + df$cropdmg != 0)
+```
 
+We isolate the top 10 causes of damage to people and to property.
+
+
+```r
 # Isolate top 10 events for personal damage
 personal.dmg <- subset(df, df$fatalities + df$injuries != 0)[ , 1:3]
 personal.dmg$count <- apply(personal.dmg[ , 2:3], 1, sum)
@@ -108,15 +115,16 @@ economic.dmg <- aggregate(. ~ evtype, economic.dmg, sum)
 economic.dmg <- head(economic.dmg[order(-economic.dmg$count), ], 10)
 ```
 
+Now the data is clean and processed and can be used to draw results.
+
 # Results
 
 ## Personal damage
 
-The top 10 natural events which are most harmful to personal health are the following:
+To understand the impact of natural events to personal safety, we look at the top 10 events that cause fatalities and injuries.
 
 
 ```r
-# Print personal damage
 personal.dmg
 ```
 
@@ -147,11 +155,11 @@ ggplot(personal.dmg, aes(x = evtype, y = value, fill = variable)) +
          x = "", y = "People affected (units)")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 ## Economic damage
 
-The top 10 natural events having the highest economic impact are the following:
+To understand the economic consequences of natural events, we look at the top 10 events that cause the greatest economic damage to property and to crops.
 
 
 ```r
@@ -160,17 +168,17 @@ economic.dmg
 ```
 
 ```
-##                evtype propdmg cropdmg   count
-## 124         tstm wind 1330737  109111 1439848
-## 38        flash flood 1247563  161067 1408629
-## 121           tornado 1187878   90129 1278007
-## 57               hail  575317  498339 1073656
-## 40              flood  824937  151826  976763
-## 119 thunderstorm wind  862257   66663  928920
-## 89          lightning  488562    1903  490465
-## 69          high wind  315098   17268  332366
-## 151      winter storm  126910    1964  128874
-## 62         heavy snow   89393    1592   90985
+##               evtype   propdmg   cropdmg     count
+## 17             flood 1.325e+11 4.793e+09 1.373e+11
+## 32 hurricane/typhoon 2.674e+10 2.608e+09 2.935e+10
+## 52           tornado 1.603e+10 2.778e+08 1.631e+10
+## 31         hurricane 9.716e+09 2.688e+09 1.240e+10
+## 24              hail 7.602e+09 1.729e+09 9.331e+09
+## 16       flash flood 7.094e+09 1.308e+09 8.402e+09
+## 49  storm surge/tide 4.641e+09 8.500e+05 4.641e+09
+## 51 thunderstorm wind 3.383e+09 3.983e+08 3.781e+09
+## 62          wildfire 3.498e+09 1.861e+08 3.684e+09
+## 30         high wind 2.425e+09 6.319e+08 3.057e+09
 ```
 
 Floods cause the highest economic damage of all event types.
@@ -186,7 +194,7 @@ ggplot(economic.dmg, aes(x = evtype, y = value, fill = variable)) +
          x = "", y = "Damage value (USD)")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
 # External resources
 - <https://ire.org/nicar/database-library/databases/storm-events/>
